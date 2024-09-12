@@ -1,0 +1,20 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/log4d
+log4d.so
+log4d.dylib
+log4d.dll
+log4d.a
+log4d.lib
+log4d-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
+.vscode
+
+# test
+log/
