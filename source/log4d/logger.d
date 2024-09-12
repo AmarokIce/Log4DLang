@@ -84,8 +84,10 @@ private:
         this.logName = name;
         this.includeDebug = includeDebug;
 
-        this.logFile = "./log/" ~ logName ~ "_" ~ getDate() ~ "_" ~ getTime().replace(":", "-") ~ ".log";
-        this.debugFile = "./log/" ~ logName ~ "_" ~ getDate() ~ "_" ~ getTime().replace(":", "-") ~ "_debug.log";
+        this.logFile = "./log/" ~ logName ~ "_" ~ getDate() ~ "_" ~ getTime()
+            .replace(":", "-") ~ ".log";
+        this.debugFile = "./log/" ~ logName ~ "_" ~ getDate() ~ "_" ~ getTime()
+            .replace(":", "-") ~ "_debug.log";
 
         if (!exists("./log/") || !isDir("./log/"))
         {
