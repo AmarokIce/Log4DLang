@@ -4,16 +4,16 @@ import std.string;
 
 final class Logger
 {
-    private const LogWriter writer;
+    private LogWriter writer;
 
     this(string name)
     {
-        this.writer = new LogWriter(logName, true, false);
+        this.writer = new LogWriter(name, true, false);
     }
 
-    this(string name, bool includeDebug, bool quiet = true)
+    this(string name, bool includeDebug, bool quiet = false)
     {
-        this.writer = new LogWriter(logName, includeDebug, quiet);
+        this.writer = new LogWriter(name, includeDebug, quiet);
     }
 
     public void log(string message, Level level)
@@ -90,7 +90,7 @@ private:
             return;
         }
 
-        createFile();
+        createFile;
     }
 
     void writeTo(Level level = Level.INFO, string msg)
