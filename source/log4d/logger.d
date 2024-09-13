@@ -2,7 +2,7 @@ module log4d.logger;
 
 import std.string;
 
-class Logger
+final class Logger
 {
     private const string logName;
     private const bool includeDebug;
@@ -74,50 +74,89 @@ private:
     const string logName;
     const bool includeDebug;
 
-    const string logFile;
-    const string debugFile;
+    static string logFile;
+    static string debugFile;
 
     this(string name, bool includeDebug)
     {
-        import log4d.dateutil : getDate;
-
         this.logName = name;
         this.includeDebug = includeDebug;
-
-        this.logFile = "./log/" ~ logName ~ "_" ~ getDate() ~ "_" ~ getTime().replace(":", "-") ~ ".log";
-        this.debugFile = "./log/" ~ logName ~ "_" ~ getDate() ~ "_" ~ getTime().replace(":", "-") ~ "_debug.log";
 
         if (!exists("./log/") || !isDir("./log/"))
         {
             mkdir("./log/");
         }
 
-        write(logFile, "");
-        if (includeDebug)
-        {
-            write(debugFile, "");
-        }
+        createFile();
     }
 
     void writeTo(Level level = Level.INFO, string msg)
     {
-        import std.stdio : writeln;
+        import std.stdio : writefln;
 
         if (level == Level.DEBUG && !this.includeDebug)
         {
             return;
         }
 
-        string info = level ~ this.getHead() ~ this.getName();
+        string info = this.getHead() ~ level ~ this.getName();
         info ~= msg;
 
-        writeln(info);
+        int color = 0;
+        final switch(level)
+        {
+            case Level.INFO:
+                color = 32;
+                break;
+            case Level.WARN:
+                color = 33;
+                break;
+            case Level.DEBUG:
+                color = 36;
+                break;
+            case Level.ERROR:
+                color = 31;
+                break;
+        }
+
+        writefln("\033[0m\033[%dm%s\033[0m", color, info);
 
         info ~= "\r\n";
         append(this.logFile, info);
         if (this.includeDebug)
         {
             append(this.debugFile, info);
+        }
+    }
+
+    void createFile()
+    {
+        import log4d.dateutil : getDate;
+
+        void cheackAndCreate(string file)
+        {
+            if (!exists(file) || !isFile(file))
+            {
+                write(file, "");
+            }
+        }
+
+        if (logFile is null)
+        {
+            logFile = "./log/" ~  getDate() ~ "_" ~ getTime()
+                .replace(":", "-") ~ ".log";
+        }
+
+        if (debugFile is null)
+        {
+            debugFile = "./log/" ~ getDate() ~ "_" ~ getTime()
+                .replace(":", "-") ~ "_debug.log";
+        }
+
+        cheackAndCreate(logFile);
+        if (this.includeDebug)
+        {
+            cheackAndCreate(debugFile);
         }
     }
 

@@ -2,8 +2,9 @@
 	"authors": [
 		"AmarokIce"
 	],
-	"copyright": "Copyleft (?) 2024, AmarokIce",
+	"copyright": "Copyleft () 2024, AmarokIce",
 	"description": "Log for DLang",
+	"version": "1.0.1",
 	"license": "MPL-2.0",
 	"name": "log4d"
 }
