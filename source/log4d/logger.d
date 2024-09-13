@@ -4,24 +4,16 @@ import std.string;
 
 final class Logger
 {
-    private const string logName;
-    private const bool includeDebug;
-    private LogWriter writer;
+    private const LogWriter writer;
 
     this(string name)
     {
-        this.logName = name;
-        this.includeDebug = true;
-
-        this.writer = new LogWriter(logName, includeDebug);
+        this.writer = new LogWriter(logName, true, false);
     }
 
-    this(string name, bool includeDebug)
+    this(string name, bool includeDebug, bool quiet = true)
     {
-        this.logName = name;
-        this.includeDebug = includeDebug;
-
-        this.writer = new LogWriter(logName, includeDebug);
+        this.writer = new LogWriter(logName, includeDebug, quiet);
     }
 
     public void log(string message, Level level)
@@ -58,6 +50,10 @@ final class Logger
         this.writer.writeTo(Level.DEBUG, message);
     }
 
+    public void debugInfo(Throwable err)
+    {
+        this.writer.writeTo(Level.DEBUG, err.toString());
+    }
 }
 
 private class LogWriter
@@ -73,18 +69,25 @@ private:
 
     const string logName;
     const bool includeDebug;
+    const bool quiet;
 
     static string logFile;
     static string debugFile;
 
-    this(string name, bool includeDebug)
+    this(string name, bool includeDebug, bool quiet)
     {
         this.logName = name;
         this.includeDebug = includeDebug;
+        this.quiet = quiet;
 
         if (!exists("./log/") || !isDir("./log/"))
         {
             mkdir("./log/");
+        }
+
+        if (quiet)
+        {
+            return;
         }
 
         createFile();
@@ -103,23 +106,28 @@ private:
         info ~= msg;
 
         int color = 0;
-        final switch(level)
+        final switch (level)
         {
-            case Level.INFO:
-                color = 32;
-                break;
-            case Level.WARN:
-                color = 33;
-                break;
-            case Level.DEBUG:
-                color = 36;
-                break;
-            case Level.ERROR:
-                color = 31;
-                break;
+        case Level.INFO:
+            color = 32;
+            break;
+        case Level.WARN:
+            color = 33;
+            break;
+        case Level.DEBUG:
+            color = 36;
+            break;
+        case Level.ERROR:
+            color = 31;
+            break;
         }
 
         writefln("\033[0m\033[%dm%s\033[0m", color, info);
+
+        if (quiet)
+        {
+            return;
+        }
 
         info ~= "\r\n";
         append(this.logFile, info);
@@ -143,7 +151,7 @@ private:
 
         if (logFile is null)
         {
-            logFile = "./log/" ~  getDate() ~ "_" ~ getTime()
+            logFile = "./log/" ~ getDate() ~ "_" ~ getTime()
                 .replace(":", "-") ~ ".log";
         }
 
