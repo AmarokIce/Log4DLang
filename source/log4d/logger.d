@@ -80,14 +80,14 @@ private:
         this.includeDebug = includeDebug;
         this.quiet = quiet;
 
-        if (!exists("./log/") || !isDir("./log/"))
-        {
-            mkdir("./log/");
-        }
-
         if (quiet)
         {
             return;
+        }
+
+        if (!exists("./log/") || !isDir("./log/"))
+        {
+            mkdir("./log/");
         }
 
         createFile;
